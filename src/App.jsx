@@ -141,50 +141,81 @@ export default function FerinoApp() {
   };
 
   // ============ PHONE FRAME ============
-  const PhoneFrame = ({ children }) => (
-    <div style={{
-      width: '100%',
-      maxWidth: '400px',
-      height: '780px',
-      margin: '0 auto',
-      background: 'linear-gradient(180deg, #0D0D0D 0%, #1A1A2E 100%)',
-      borderRadius: '44px',
-      padding: '12px',
-      boxShadow: '0 25px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.1), inset 0 0 0 1px rgba(255,255,255,0.05)',
-      position: 'relative',
-      overflow: 'hidden',
-    }}>
-      <div style={{
-        position: 'absolute',
-        top: '12px',
-        left: '50%',
-        transform: 'translateX(-50%)',
-        width: '130px',
-        height: '32px',
-        background: '#000',
-        borderRadius: '20px',
-        zIndex: 100,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: '8px'
-      }}>
-        <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#1a1a2e' }} />
-        <div style={{ width: '50px', height: '4px', borderRadius: '2px', background: '#1a1a2e' }} />
-      </div>
-      
+  const PhoneFrame = ({ children }) => {
+    const [isMobile, setIsMobile] = useState(false);
+    
+    useEffect(() => {
+      const checkMobile = () => {
+        setIsMobile(window.innerWidth <= 480);
+      };
+      checkMobile();
+      window.addEventListener('resize', checkMobile);
+      return () => window.removeEventListener('resize', checkMobile);
+    }, []);
+
+    // Mobile: fullscreen, sem frame
+    if (isMobile) {
+      return (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'linear-gradient(180deg, #0F0F1A 0%, #16162A 100%)',
+          overflow: 'hidden',
+        }}>
+          {children}
+        </div>
+      );
+    }
+
+    // Desktop: com frame de celular
+    return (
       <div style={{
         width: '100%',
-        height: '100%',
-        background: 'linear-gradient(180deg, #0F0F1A 0%, #16162A 100%)',
-        borderRadius: '36px',
-        overflow: 'hidden',
+        maxWidth: '400px',
+        height: '780px',
+        margin: '0 auto',
+        background: 'linear-gradient(180deg, #0D0D0D 0%, #1A1A2E 100%)',
+        borderRadius: '44px',
+        padding: '12px',
+        boxShadow: '0 25px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.1), inset 0 0 0 1px rgba(255,255,255,0.05)',
         position: 'relative',
+        overflow: 'hidden',
       }}>
-        {children}
+        <div style={{
+          position: 'absolute',
+          top: '12px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          width: '130px',
+          height: '32px',
+          background: '#000',
+          borderRadius: '20px',
+          zIndex: 100,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '8px'
+        }}>
+          <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#1a1a2e' }} />
+          <div style={{ width: '50px', height: '4px', borderRadius: '2px', background: '#1a1a2e' }} />
+        </div>
+        
+        <div style={{
+          width: '100%',
+          height: '100%',
+          background: 'linear-gradient(180deg, #0F0F1A 0%, #16162A 100%)',
+          borderRadius: '36px',
+          overflow: 'hidden',
+          position: 'relative',
+        }}>
+          {children}
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   // ============ SPLASH SCREEN ============
   const SplashScreen = () => (
@@ -2596,6 +2627,30 @@ export default function FerinoApp() {
     }
   };
 
+  // Detect mobile for main layout
+  const [isMobileLayout, setIsMobileLayout] = useState(false);
+  
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobileLayout(window.innerWidth <= 480);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Mobile: fullscreen app
+  if (isMobileLayout) {
+    return (
+      <div style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}>
+        <PhoneFrame>
+          {renderScreen()}
+        </PhoneFrame>
+      </div>
+    );
+  }
+
+  // Desktop: with phone mockup
   return (
     <div style={{
       minHeight: '100vh',
